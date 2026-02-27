@@ -1,0 +1,53 @@
+# MindCub3r
+
+LEGO EV3 robot that solves a Rubik's Cube using CFOP, with a laptop simulator.
+
+## Project structure
+
+```
+mindcub3r/
+├── main.py                  # entry point
+├── cube/
+│   ├── state.py             # apply scrambles, read face grids from PyCuber
+│   ├── display.py           # print csTimer-style layout
+│   └── solver.py            # CFOP solver (not yet implemented)
+├── robot/
+│   ├── move_mapper.py       # WCA moves → physical robot action sequences
+│   ├── motor.py             # EV3 motor commands (EV3 only)
+│   └── scanner.py           # EV3 colour sensor → cube state (EV3 only)
+└── simulator/
+    └── runner.py            # laptop simulator (no hardware needed)
+```
+
+## Setup
+
+```bash
+pip install pycuber
+```
+
+## Run the simulator
+
+```bash
+python main.py
+```
+
+## Orientation
+
+All scrambles and displays use **White on top, Green in front** — matching csTimer's default.
+This is also PyCuber's default solved state, so no remapping is needed.
+
+## Key PyCuber facts (for future reference)
+
+- `cube["U"]` → returns a Centre **cubie** object, NOT a face grid
+- `cube.get_face("U")` → returns a 3×3 list of Square objects ✓
+- `Square.colour` → full English name: `"white"`, `"yellow"`, etc.
+- Use `COLOUR_MAP` in `cube/state.py` to convert to single letters
+
+## What's implemented
+
+- [x] Scramble input and cube state display
+- [x] csTimer-style 54-sticker layout
+- [x] WCA move → robot action mapping (in move_mapper.py)
+- [ ] CFOP solver
+- [ ] EV3 motor execution
+- [ ] EV3 colour sensor scanning
