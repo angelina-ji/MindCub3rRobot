@@ -51,7 +51,7 @@ TURN_180    = "TURN_180"
 #   R  → tilt right (R becomes bottom), turn, tilt left
 #   L  → tilt left (L becomes bottom), turn, tilt right
 
-MOVE_MAP: dict[str, list[str]] = {
+MOVE_MAP = {
 
     # ── D face (bottom) — no tilt needed ──────────────────────
     "D":  [TURN_CW],
@@ -85,7 +85,7 @@ MOVE_MAP: dict[str, list[str]] = {
 }
 
 
-def scramble_to_actions(scramble: str) -> list[str]:
+def scramble_to_actions(scramble):
     """
     Convert a full WCA scramble string into a flat list of physical actions.
 
@@ -101,6 +101,6 @@ def scramble_to_actions(scramble: str) -> list[str]:
     actions = []
     for move in scramble.strip().split():
         if move not in MOVE_MAP:
-            raise KeyError(f"Unknown move: '{move}'. Valid moves: {list(MOVE_MAP.keys())}")
+            raise KeyError("Unknown move: '" + move + "'. Valid moves: " + str(list(MOVE_MAP.keys())))
         actions.extend(MOVE_MAP[move])
     return actions

@@ -131,7 +131,7 @@ def _apply_once(c, face, inv):
 
 def apply_move(state: CubeState, move: str) -> CubeState:
     if move not in VALID_MOVES:
-        raise ValueError(f"Invalid move: '{move}'. Valid: {sorted(VALID_MOVES)}")
+        raise ValueError("Invalid move: '" + move + "'. Valid: " + str(sorted(VALID_MOVES)))
     face = move[0]
     inv  = "'" in move
     dbl  = "2" in move

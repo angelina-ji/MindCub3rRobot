@@ -40,7 +40,7 @@ def print_cube(state: CubeState, label: str = "") -> None:
     L = state["L"]; R = state["R"]
 
     if label:
-        print(f"\n{label}")
+        print("\n" + str(label))
 
     # ── Top face ───────────────────────────────────────────────
     print()
