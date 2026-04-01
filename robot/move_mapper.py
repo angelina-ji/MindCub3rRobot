@@ -1,106 +1,50 @@
-"""
-robot/move_mapper.py
---------------------
-Translates standard WCA notation moves into physical robot action sequences.
+# Physical action constants
+TILT    = "TILT"       # arm tilts cube left (U->L->D->R->U)
+SPIN_CW  = "SPIN_CW"   # whole cube spins CW from top
+SPIN_CCW = "SPIN_CCW"  # whole cube spins CCW from top
+SPIN_180 = "SPIN_180"  # whole cube spins 180
+TURN_CW  = "TURN_CW"   # bottom layer CW
+TURN_CCW = "TURN_CCW"  # bottom layer CCW
+TURN_180 = "TURN_180"  # bottom layer 180
 
-MindCub3r hardware constraint:
-  Only the BOTTOM layer rotates.
-  To execute a move on any other face, the robot must first tilt/rotate
-  the cube so that face becomes the bottom, perform the turn, then
-  optionally restore orientation.
-
-Cube orientation convention (matches csTimer + PyCuber default):
-  White = top (U), Yellow = bottom (D), Green = front (F)
-
-Physical actions (will call motor.py when on EV3):
-  TILT_FRONT   → tilt cube toward front (U→F, F→D, D→B, B→U)
-  TILT_BACK    → tilt cube toward back  (U→B, B→D, D→F, F→U)
-  TILT_RIGHT   → tilt cube toward right (U→R, R→D, D→L, L→U)
-  TILT_LEFT    → tilt cube toward left  (U→L, L→D, D→R, R→U)
-  SPIN_CW      → rotate whole cube clockwise when viewed from top (U stays)
-  SPIN_CCW     → rotate whole cube counter-clockwise from top
-  TURN_CW      → bottom layer 90° clockwise  (D face CW from below)
-  TURN_CCW     → bottom layer 90° counter-clockwise
-  TURN_180     → bottom layer 180°
-
-Each WCA move maps to a sequence of these physical actions.
-"""
-
-# ── Physical action constants ──────────────────────────────────────────────
-
-TILT_FRONT  = "TILT_FRONT"
-TILT_BACK   = "TILT_BACK"
-TILT_RIGHT  = "TILT_RIGHT"
-TILT_LEFT   = "TILT_LEFT"
-SPIN_CW     = "SPIN_CW"
-SPIN_CCW    = "SPIN_CCW"
-TURN_CW     = "TURN_CW"
-TURN_CCW    = "TURN_CCW"
-TURN_180    = "TURN_180"
-
-
-# ── Move map ────────────────────────────────────────────────────────────────
-# Each key is a WCA move string.
-# Each value is a list of physical actions to perform in order.
-#
-# Logic for each face:
-#   D  → bottom layer already, just turn
-#   U  → tilt twice (flip upside-down), turn, tilt twice back
-#   F  → tilt forward (F becomes bottom), turn, tilt back
-#   B  → tilt backward (B becomes bottom), turn, tilt forward
-#   R  → tilt right (R becomes bottom), turn, tilt left
-#   L  → tilt left (L becomes bottom), turn, tilt right
+T = TILT
 
 MOVE_MAP = {
-
-    # ── D face (bottom) — no tilt needed ──────────────────────
+    # D face - bottom, just turn
     "D":  [TURN_CW],
     "D'": [TURN_CCW],
     "D2": [TURN_180],
 
-    # ── U face (top) — tilt front twice to flip upside-down ───
-    "U":  [TILT_FRONT, TILT_FRONT, TURN_CW,  TILT_FRONT, TILT_FRONT],
-    "U'": [TILT_FRONT, TILT_FRONT, TURN_CCW, TILT_FRONT, TILT_FRONT],
-    "U2": [TILT_FRONT, TILT_FRONT, TURN_180, TILT_FRONT, TILT_FRONT],
+    # U face - tilt x2, turn, tilt x2
+    "U":  [T,T, TURN_CW,  T,T],
+    "U'": [T,T, TURN_CCW, T,T],
+    "U2": [T,T, TURN_180, T,T],
 
-    # ── F face (front) — tilt forward once ────────────────────
-    "F":  [TILT_FRONT, TURN_CW,  TILT_BACK],
-    "F'": [TILT_FRONT, TURN_CCW, TILT_BACK],
-    "F2": [TILT_FRONT, TURN_180, TILT_BACK],
+    # L face - tilt x1, turn, tilt x3
+    "L":  [T, TURN_CW,  T,T,T],
+    "L'": [T, TURN_CCW, T,T,T],
+    "L2": [T, TURN_180, T,T,T],
 
-    # ── B face (back) — tilt back once ────────────────────────
-    "B":  [TILT_BACK, TURN_CCW, TILT_FRONT],   # B CW from front = CCW from bottom
-    "B'": [TILT_BACK, TURN_CW,  TILT_FRONT],
-    "B2": [TILT_BACK, TURN_180, TILT_FRONT],
+    # R face - spin 180, tilt x1, turn, tilt x3, spin 180
+    "R":  [SPIN_180, T, TURN_CW,  T,T,T, SPIN_180],
+    "R'": [SPIN_180, T, TURN_CCW, T,T,T, SPIN_180],
+    "R2": [SPIN_180, T, TURN_180, T,T,T, SPIN_180],
 
-    # ── R face (right) — tilt right once ──────────────────────
-    "R":  [TILT_RIGHT, TURN_CCW, TILT_LEFT],   # R CW from front = CCW from bottom
-    "R'": [TILT_RIGHT, TURN_CW,  TILT_LEFT],
-    "R2": [TILT_RIGHT, TURN_180, TILT_LEFT],
+    # F face - spin CW 90, tilt x1, turn, tilt x3, spin CCW 90
+    "F":  [SPIN_CW, T, TURN_CW,  T,T,T, SPIN_CCW],
+    "F'": [SPIN_CW, T, TURN_CCW, T,T,T, SPIN_CCW],
+    "F2": [SPIN_CW, T, TURN_180, T,T,T, SPIN_CCW],
 
-    # ── L face (left) — tilt left once ────────────────────────
-    "L":  [TILT_LEFT, TURN_CW,  TILT_RIGHT],
-    "L'": [TILT_LEFT, TURN_CCW, TILT_RIGHT],
-    "L2": [TILT_LEFT, TURN_180, TILT_RIGHT],
+    # B face - spin CCW 90, tilt x1, turn, tilt x3, spin CW 90
+    "B":  [SPIN_CCW, T, TURN_CW,  T,T,T, SPIN_CW],
+    "B'": [SPIN_CCW, T, TURN_CCW, T,T,T, SPIN_CW],
+    "B2": [SPIN_CCW, T, TURN_180, T,T,T, SPIN_CW],
 }
 
-
 def scramble_to_actions(scramble):
-    """
-    Convert a full WCA scramble string into a flat list of physical actions.
-
-    Args:
-        scramble: e.g. "U F' D2 R L"
-
-    Returns:
-        List of action strings, e.g. ["TILT_FRONT", "TILT_FRONT", "TURN_CW", ...]
-
-    Raises:
-        KeyError: if a move in the scramble is not in MOVE_MAP.
-    """
     actions = []
     for move in scramble.strip().split():
         if move not in MOVE_MAP:
-            raise KeyError("Unknown move: '" + move + "'. Valid moves: " + str(list(MOVE_MAP.keys())))
+            raise KeyError("Unknown move: '" + move + "'")
         actions.extend(MOVE_MAP[move])
     return actions
