@@ -32,13 +32,13 @@ def turn_180():
     release()
 
 def spin_cw():
-    table.on_for_degrees(SpeedPercent(40), -270)
-    time.sleep(0.3)
-
-def spin_ccw():
     table.on_for_degrees(SpeedPercent(40), 270)
     time.sleep(0.3)
 
+def spin_ccw():
+    table.on_for_degrees(SpeedPercent(40), -270)
+    time.sleep(0.3)
+
 def spin_180():
-    table.on_for_degrees(SpeedPercent(40), -540)
+    table.on_for_degrees(SpeedPercent(40), 540)
     time.sleep(0.3)
