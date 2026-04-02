@@ -1,26 +1,24 @@
-from robot.motor import turn_cw, turn_ccw, turn_180, tilt_forward
-from robot.move_mapper import MOVE_MAP
+from robot.move_mapper import scramble_to_actions, TILT, SPIN_CW, SPIN_CCW, SPIN_180, TURN_CW, TURN_CCW, TURN_180
+from robot.motor import tilt_forward, spin_cw, spin_ccw, spin_180, turn_cw, turn_ccw, turn_180
 import time
 
-def execute_move(move):
-    actions = MOVE_MAP[move]
-    for action in actions:
-        if action == 'TURN_CW':
-            turn_cw()
-        elif action == 'TURN_CCW':
-            turn_ccw()
-        elif action == 'TURN_180':
-            turn_180()
-        elif action == 'TILT_FRONT':
-            tilt_forward()
-        time.sleep(0.3)
+ACTION_MAP = {
+    TILT:     tilt_forward,
+    SPIN_CW:  spin_cw,
+    SPIN_CCW: spin_ccw,
+    SPIN_180: spin_180,
+    TURN_CW:  turn_cw,
+    TURN_CCW: turn_ccw,
+    TURN_180: turn_180,
+}
 
-scramble = input("Enter scramble: ").strip().split()
-print("Executing " + str(len(scramble)) + " moves...")
+scramble = input("Enter scramble: ").strip()
+actions = scramble_to_actions(scramble)
+print("Executing " + str(len(actions)) + " actions...")
 
-for move in scramble:
-    print("Move: " + move)
-    execute_move(move)
+for action in actions:
+    print(action)
+    ACTION_MAP[action]()
     time.sleep(0.2)
 
 print("Done!")

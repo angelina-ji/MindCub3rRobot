@@ -14,7 +14,7 @@ def release():
 def tilt_forward():
     tilt.on_for_degrees(SpeedPercent(30), 275)
     time.sleep(0.1)
-    tilt.on_for_degrees(SpeedPercent(10), -185)
+    tilt.on_for_degrees(SpeedPercent(30), -275)
 
 def turn_cw():
     grip()
@@ -30,3 +30,15 @@ def turn_180():
     grip()
     table.on_for_degrees(SpeedPercent(60), 540)
     release()
+
+def spin_cw():
+    table.on_for_degrees(SpeedPercent(40), -270)
+    time.sleep(0.3)
+
+def spin_ccw():
+    table.on_for_degrees(SpeedPercent(40), 270)
+    time.sleep(0.3)
+
+def spin_180():
+    table.on_for_degrees(SpeedPercent(40), -540)
+    time.sleep(0.3)
