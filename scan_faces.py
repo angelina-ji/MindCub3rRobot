@@ -9,40 +9,21 @@ table = LargeMotor(OUTPUT_B)
 scanner_motor = MediumMotor(OUTPUT_C)
 sensor = ColorSensor(INPUT_2)
 
-KNOWN = {
-    'W': (238, 255, 192),
-    'Y': (198, 238, 204),
-    'G': (37, 127, 84),
-    'B': (25, 70, 79),
-    'R': (132, 99, 34),
-    'O': (164, 195, 159),
-}
+KNOWN = {}
 
-def detect_color(rgb):
-    best = None
-    best_dist = float('inf')
-    for name, ref in KNOWN.items():
-        dist = math.sqrt(sum((a-b)**2 for a,b in zip(rgb, ref)))
-        if dist < best_dist:
-            best_dist = dist
-            best = name
-    return best
-
-def scan():
+def read_rgb():
     scanner_motor.on_for_degrees(SpeedPercent(30), -420)
     time.sleep(0.5)
     rgb = sensor.rgb
-    color = detect_color(rgb)
-    time.sleep(0.3)
     scanner_motor.on_for_degrees(SpeedPercent(30), 420)
-    time.sleep(0.5)
-    return color
+    time.sleep(0.3)
+    return rgb
 
 def tilt_ccw():
     tilt.on_for_degrees(SpeedPercent(30), 275)
+    time.sleep(0.1)
+    tilt.on_for_degrees(SpeedPercent(30), -275)
     time.sleep(0.3)
-    tilt.on_for_degrees(SpeedPercent(10), -275)
-    time.sleep(0.5)
 
 def rotate_whole_cube_cw():
     table.on_for_degrees(SpeedPercent(40), -270)
@@ -55,42 +36,42 @@ def rotate_whole_cube_ccw():
 print("Starting scan - place cube white up, green front")
 input("Press enter to start...")
 
-results = {}
-
 print("Scanning U (white)...")
-results['U'] = scan()
+KNOWN['W'] = read_rgb()
+print("W =", KNOWN['W'])
 
 tilt_ccw()
 print("Scanning R (red)...")
-results['R'] = scan()
+KNOWN['R'] = read_rgb()
+print("R =", KNOWN['R'])
 
 tilt_ccw()
 print("Scanning D (yellow)...")
-results['D'] = scan()
+KNOWN['Y'] = read_rgb()
+print("Y =", KNOWN['Y'])
 
 tilt_ccw()
 print("Scanning L (orange)...")
-results['L'] = scan()
+KNOWN['O'] = read_rgb()
+print("O =", KNOWN['O'])
 
 tilt_ccw()
 rotate_whole_cube_cw()
 
 tilt_ccw()
 print("Scanning F (green)...")
-results['F'] = scan()
+KNOWN['G'] = read_rgb()
+print("G =", KNOWN['G'])
 
 tilt_ccw()
 tilt_ccw()
 print("Scanning B (blue)...")
-results['B'] = scan()
+KNOWN['B'] = read_rgb()
+print("B =", KNOWN['B'])
 
 tilt_ccw()
 rotate_whole_cube_ccw()
 
 print("\nScan complete!")
-print("U (white face):", results['U'])
-print("R (red face):  ", results['R'])
-print("D (yellow face):", results['D'])
-print("L (orange face):", results['L'])
-print("B (blue face): ", results['B'])
-print("F (green face):", results['F'])
+for color, rgb in KNOWN.items():
+    print(color + ": " + str(rgb))
