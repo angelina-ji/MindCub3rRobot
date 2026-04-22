@@ -5,7 +5,7 @@ LEGO EV3 robot that solves a Rubik's Cube, with a laptop simulator.
 ## Project structure
 
 ```
-mindcub3r/
+Speedcube_Shuffler/
 ├── main.py              # entry point — simulator by default, --robot flag for EV3
 ├── scramble.py          # run a scramble directly on the physical robot
 ├── demo.py              # test basic motor movements on EV3
@@ -30,7 +30,7 @@ mindcub3r/
 └── test/                # hardware test scripts
 
 
-mindcub3r/
+Speedcube_Shuffler/
 ├── main.py              # entry point: simulator by default, --robot for EV3
 ├── scramble.py          # direct entry point for physical robot execution
 ├── cube/
