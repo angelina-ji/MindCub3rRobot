@@ -1,22 +1,33 @@
 # MindCub3r
 
-LEGO EV3 robot that solves a Rubik's Cube using CFOP, with a laptop simulator.
+LEGO EV3 robot that solves a Rubik's Cube, with a laptop simulator.
 
 ## Project structure
 
 ```
 mindcub3r/
-├── main.py                  # entry point
+├── main.py              # entry point — simulator by default, --robot flag for EV3
+├── scramble.py          # run a scramble directly on the physical robot
+├── demo.py              # test basic motor movements on EV3
+├── scan_faces.py        # scan all 6 face colours using the EV3 colour sensor
+├── double_flip.py       # test double-flip sequence on EV3
 ├── cube/
-│   ├── state.py             # apply scrambles, read face grids from PyCuber
-│   ├── display.py           # print csTimer-style layout
-│   └── solver.py            # CFOP solver (not yet implemented)
+│   ├── state.py         # apply scrambles, read face grids from PyCuber
+│   ├── display.py       # print csTimer-style layout
+│   └── solver.py        # CFOP solver (not yet implemented)
 ├── robot/
-│   ├── move_mapper.py       # WCA moves → physical robot action sequences
-│   ├── motor.py             # EV3 motor commands (EV3 only)
-│   └── scanner.py           # EV3 colour sensor → cube state (EV3 only)
-└── simulator/
-    └── runner.py            # laptop simulator (no hardware needed)
+│   ├── motor.py         # EV3 motor commands (EV3 only)
+│   ├── move_mapper.py   # WCA moves → physical robot action sequences
+│   ├── orientation.py   # tracks cube orientation across tilts/spins
+│   └── scanner.py       # EV3 colour sensor → cube state (EV3 only)
+├── simulator/
+│   └── runner.py        # interactive laptop simulator (no hardware needed)
+├── calibration/         # EV3 calibration and utility scripts
+│   ├── calibrate.py
+│   ├── free.py
+│   ├── free_motors.py
+│   └── reset_arm.py
+└── test/                # hardware test scripts
 ```
 
 ## Setup
@@ -25,10 +36,27 @@ mindcub3r/
 pip install pycuber
 ```
 
-## Run the simulator
+## Run the simulator (laptop)
 
 ```bash
 python main.py
+```
+
+The simulator lets you enter WCA scrambles and see the resulting cube state and the list of robot actions that would be executed.
+
+## Run on the EV3
+
+Copy the repo to the EV3 brick, then run scripts directly:
+
+```bash
+# Execute a scramble on the robot
+python scramble.py
+
+# Scan all 6 faces for colour calibration
+python scan_faces.py
+
+# Quick motor test
+python demo.py
 ```
 
 ## Orientation
@@ -36,7 +64,15 @@ python main.py
 All scrambles and displays use **White on top, Green in front** — matching csTimer's default.
 This is also PyCuber's default solved state, so no remapping is needed.
 
-## Key PyCuber facts (for future reference)
+## How the robot works
+
+1. The cube sits on a **turntable** (Output B) that spins the bottom layer.
+2. A **tilt arm** (Output A) grips and tilts the cube to bring any face to the bottom.
+3. A **scanner arm** (Output C) sweeps the colour sensor over the top face.
+
+`robot/orientation.py` tracks which colour is on which face after each tilt and spin, so `scramble.py` always knows how to reorient the cube before turning a given face.
+
+## Key PyCuber facts
 
 - `cube["U"]` → returns a Centre **cubie** object, NOT a face grid
 - `cube.get_face("U")` → returns a 3×3 list of Square objects ✓
@@ -47,7 +83,9 @@ This is also PyCuber's default solved state, so no remapping is needed.
 
 - [x] Scramble input and cube state display
 - [x] csTimer-style 54-sticker layout
-- [x] WCA move → robot action mapping (in move_mapper.py)
+- [x] WCA move → robot action mapping (`move_mapper.py`)
+- [x] Orientation tracking across tilts and spins (`orientation.py`)
+- [x] EV3 motor execution (`motor.py`, `scramble.py`)
+- [x] Colour sensor face scanning (`scan_faces.py`)
+- [ ] Full cube state read from sensor (54-sticker scan)
 - [ ] CFOP solver
-- [ ] EV3 motor execution
-- [ ] EV3 colour sensor scanning
