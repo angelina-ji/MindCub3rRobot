@@ -28,6 +28,22 @@ mindcub3r/
 │   ├── free_motors.py
 │   └── reset_arm.py
 └── test/                # hardware test scripts
+
+
+mindcub3r/
+├── main.py              # entry point: simulator by default, --robot for EV3
+├── scramble.py          # direct entry point for physical robot execution
+├── cube/
+│   ├── state.py         # cube state representation (built on PyCuber)
+│   └── display.py       # csTimer-style visual layout
+├── robot/
+│   ├── motor.py         # primitive motor actions and calibration constants
+│   ├── move_mapper.py   # naive baseline: WCA moves → fixed action sequences
+│   └── orientation.py   # orientation state machine and action planner
+└── simulator/
+    └── runner.py        # interactive laptop simulator (no hardware required)
+
+    
 ```
 
 ## Setup
