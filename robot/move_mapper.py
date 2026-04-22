@@ -25,13 +25,13 @@ MOVE_MAP = {
     "R'": [SPIN_180, T, TURN_CCW, T,T,T, SPIN_180],
     "R2": [SPIN_180, T, TURN_180, T,T,T, SPIN_180],
 
-    "F":  [SPIN_CCW, T, TURN_CW,  T,T,T, SPIN_CW],
-    "F'": [SPIN_CCW, T, TURN_CCW, T,T,T, SPIN_CW],
-    "F2": [SPIN_CCW, T, TURN_180, T,T,T, SPIN_CW],
+    "F":  [SPIN_CW, T, TURN_CW,  T,T,T, SPIN_CCW],
+    "F'": [SPIN_CW, T, TURN_CCW, T,T,T, SPIN_CCW],
+    "F2": [SPIN_CW, T, TURN_180, T,T,T, SPIN_CCW],
 
-    "B":  [SPIN_CW, T, TURN_CW,  T,T,T, SPIN_CCW],
-    "B'": [SPIN_CW, T, TURN_CCW, T,T,T, SPIN_CCW],
-    "B2": [SPIN_CW, T, TURN_180, T,T,T, SPIN_CCW],
+    "B":  [SPIN_CCW, T, TURN_CW,  T,T,T, SPIN_CW],
+    "B'": [SPIN_CCW, T, TURN_CCW, T,T,T, SPIN_CW],
+    "B2": [SPIN_CCW, T, TURN_180, T,T,T, SPIN_CW],
 }
 
 def scramble_to_actions(scramble):
